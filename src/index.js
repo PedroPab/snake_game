@@ -1,6 +1,7 @@
 const canvas = document.getElementById('canvas_snake');
 const ctx = canvas.getContext('2d');
 
+const time = 200;
 var dire = { 'N': 'Norte', S: 'Sur', E: 'Este', 'O': 'Oeste' }
 var star = false;
 var direccion = dire.E;
@@ -38,12 +39,17 @@ function dibujarCuadrados(x, y, ancho, largo, color = '#000000', linzo = ctx) {
 function teclaPrecionada(event) {
     if (!star && event.keyCode == tecla.ENTER) {
         //dibujarCuadrados(pocition[0].x, pocition[0].y, grosor, grosor );
-        dibujarTodo(pocition)
+        dibujarTodoElCuerpo(pocition)
+        dibujarManzana(pocition)
         star = true
-        setTimeout(dibujarSnake, 700)
+        setTimeout(dibujarSnake, time)
 
     } else if (star && event.keyCode == tecla.PAUSE) {
-        //pause
+        star = false
+    } else if(!star && event.keyCode == tecla.PAUSE){
+        star = true
+        setTimeout(dibujarSnake, time)
+
     }
     console.log(event)
 
@@ -71,49 +77,89 @@ function teclaPrecionada(event) {
 }
 
 function dibujarSnake() {
-
-    setTimeout(dibujarSnake, 200)
-    switch (direccion) {
-        case 'Este':
-            pocition.unshift({ x: pocition[0].x + grosor, y: pocition[0].y })
-            dibujarCuadrados(pocition[0].x, pocition[0].y, grosor, grosor, colorAleatorio());
-            ctx.clearRect(pocition[pocition.length - 1].x, pocition[pocition.length - 1].y, grosor, grosor);
-            pocition.pop()
-            console.log(pocition)
-            break;
-        case 'Norte':
-            pocition.unshift({ x: pocition[0].x , y: pocition[0].y  - grosor})
-            dibujarCuadrados(pocition[0].x, pocition[0].y, grosor, grosor, colorAleatorio());
-            ctx.clearRect(pocition[pocition.length - 1].x, pocition[pocition.length - 1].y, grosor, grosor);
-            pocition.pop()
-            console.log(pocition)
-            break;
-        case 'Oeste':
-            pocition.unshift({ x: pocition[0].x - grosor, y: pocition[0].y })
-            dibujarCuadrados(pocition[0].x, pocition[0].y, grosor, grosor, colorAleatorio());
-            ctx.clearRect(pocition[pocition.length - 1].x, pocition[pocition.length - 1].y, grosor, grosor);
-            pocition.pop()
-            console.log(pocition)
-            break;
-        case 'Sur':
-            pocition.unshift({ x: pocition[0].x , y: pocition[0].y  + grosor})
-            dibujarCuadrados(pocition[0].x, pocition[0].y, grosor, grosor, colorAleatorio());
-            ctx.clearRect(pocition[pocition.length - 1].x, pocition[pocition.length - 1].y, grosor, grosor);
-            pocition.pop()
-            console.log(pocition)
-            break;
-        default:
-            break;
+    if (star) {
+        setTimeout(dibujarSnake, time)
+        switch (direccion) {
+            case 'Este':
+                pocition.unshift({ x: pocition[0].x + grosor, y: pocition[0].y })
+                dibujarCuadrados(pocition[0].x, pocition[0].y, grosor, grosor, colorAleatorio());
+                ctx.clearRect(pocition[pocition.length - 1].x, pocition[pocition.length - 1].y, grosor, grosor);
+                pocition.pop()
+                console.log(pocition)
+                break;
+            case 'Norte':
+                pocition.unshift({ x: pocition[0].x, y: pocition[0].y - grosor })
+                dibujarCuadrados(pocition[0].x, pocition[0].y, grosor, grosor, colorAleatorio());
+                ctx.clearRect(pocition[pocition.length - 1].x, pocition[pocition.length - 1].y, grosor, grosor);
+                pocition.pop()
+                console.log(pocition)
+                break;
+            case 'Oeste':
+                pocition.unshift({ x: pocition[0].x - grosor, y: pocition[0].y })
+                dibujarCuadrados(pocition[0].x, pocition[0].y, grosor, grosor, colorAleatorio());
+                ctx.clearRect(pocition[pocition.length - 1].x, pocition[pocition.length - 1].y, grosor, grosor);
+                pocition.pop()
+                console.log(pocition)
+                break;
+            case 'Sur':
+                pocition.unshift({ x: pocition[0].x, y: pocition[0].y + grosor })
+                dibujarCuadrados(pocition[0].x, pocition[0].y, grosor, grosor, colorAleatorio());
+                ctx.clearRect(pocition[pocition.length - 1].x, pocition[pocition.length - 1].y, grosor, grosor);
+                pocition.pop()
+                console.log(pocition)
+                break;
+            default:
+                break;
+        }
     }
+
+
 
 
 }
 
-function dibujarTodo(array) {
-    console.log(array)
+function dibujarTodoElCuerpo(array) {
+    //console.log(array)
+    dibujarCuadricula(grosor, canvas)
+    dibujarCuadricula(grosor * 5, canvas)
+    dibujarCuadricula(grosor * 5, canvas)
     array.forEach(element => {
         dibujarCuadrados(element.x, element.y, grosor, grosor, colorAleatorio())
     });
+
+
+}
+
+function dibujarManzana(array) {
+
+    const x_aleatorio = aleatorio(0, parseInt(ancho/ grosor)) * 15
+    const y_aleatorio = aleatorio(0, parseInt(ancho/ grosor)) * 15;
+    //(aleatorio(0, 32) * 15);
+
+    //dibujarCuadrados(x_aleatorio, y_aleatorio, grosor, grosor, 'red')
+    console.log(array)
+    console.log(x_aleatorio, y_aleatorio)
+    //(aleatorio(0, 32) * 15);
+    array.forEach(element => {
+        if (element.x == x_aleatorio &&
+            element.y == y_aleatorio) {
+            alert('lalsdflksj')
+            console.log('toso mal')
+            // ctx.clearRect(0, 0, ancho, largo)
+            // dibujarTodoElCuerpo(pocition)
+            return dibujarManzana(array);
+
+        } else if (element.x !== x_aleatorio &&
+            element.y !== y_aleatorio){
+            ctx.clearRect(0, 0, ancho, largo)
+            dibujarTodoElCuerpo(pocition)
+            dibujarCuadrados(x_aleatorio, y_aleatorio, grosor, grosor, 'red')
+            console.log('todo bien')
+
+        }
+
+    });
+    //return [{ x: x_aleatorio, y: y_aleatorio }]
 }
 
 
@@ -132,5 +178,27 @@ function colorAleatorio() {
         posarray = aleatorio(0, hexadecimal.length)
         color_aleatorio += hexadecimal[posarray]
     }
-    return color_aleatorio
+    return 'black'
+}
+
+function dibujarLinea(color, xinicial, yinicial, xfinal, yfinal, lienzo = ctx, grosor = 3) {
+    lienzo.beginPath();
+    lienzo.strokeStyle = color;
+    lienzo.lineWidth = grosor;
+    lienzo.moveTo(xinicial, yinicial);
+    lienzo.lineTo(xfinal, yfinal);
+    lienzo.stroke();
+    lienzo.closePath();
+}
+
+function dibujarCuadricula(cada_cuanto, canvas, lienzo = ctx, color = '#000', grosor = 1) {
+    const width = canvas.width;
+    const height = canvas.height;
+    for (let i = 0; i < canvas.width / cada_cuanto + 1; i++) {
+        dibujarLinea(color, cada_cuanto * i, 0, cada_cuanto * i, height, lienzo, grosor);
+    }
+    for (let i = 0; i < canvas.height / cada_cuanto + 1; i++) {
+        dibujarLinea(color, 0, cada_cuanto * i, width, cada_cuanto * i, lienzo, grosor);
+    }
+
 }
