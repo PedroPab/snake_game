@@ -2,8 +2,8 @@ const canvas = document.getElementById('canvas_snake');
 const ctx = canvas.getContext('2d');
 
 var inicio = false
-
-const time = 200;
+var puntage = 0
+const time = 100;
 var dire = { 'N': 'Norte', S: 'Sur', E: 'Este', 'O': 'Oeste' }
 var star = false;
 var direccion = dire.E;
@@ -20,7 +20,8 @@ var ancho = canvas.clientWidth;
 var largo = canvas.clientHeight;
 var grosor = 15;
 
-var pocition = [{ x: 120, y: 120 }, { x: 120 - 15, y: 120 }, { x: 120 - 15 - 15, y: 120 }]
+var cuerpo_cordenadas = [{ x: 120, y: 120 }, { x: 120 - 15, y: 120 }, { x: 120 - 15 - 15, y: 120 }]
+var manzanas_cordenadas = []
 var ultima_tecla_precionada
 
 if (ctx) {
@@ -40,15 +41,19 @@ function dibujarCuadrados(x, y, ancho, largo, color = '#000000', linzo = ctx) {
 
 function teclaPrecionada(event) {
     if (!star && event.keyCode == tecla.ENTER) {
-        //dibujarCuadrados(pocition[0].x, pocition[0].y, grosor, grosor );
-        dibujarTodoElCuerpo(pocition);
-        !inicio ? dibujarManzana(pocition) : inicio = true
+        //dibujarCuadrados(cuerpo_cordenadas[0].x, cuerpo_cordenadas[0].y, grosor, grosor );
+        dibujarTodoElCuerpo(cuerpo_cordenadas);
+        if (!inicio) {
+            dibujarManzana(cuerpo_cordenadas)
+            inicio = true
+        }
+
         star = true
         setTimeout(dibujarSnake, time)
 
     } else if (star && event.keyCode == tecla.PAUSE) {//pause
         star = false
-    } else if(!star && event.keyCode == tecla.PAUSE){//despause
+    } else if (!star && event.keyCode == tecla.PAUSE) {//despause
         star = true
         setTimeout(dibujarSnake, time)
 
@@ -73,7 +78,7 @@ function teclaPrecionada(event) {
         default:
             break;
     }
-    console.log(ultima_tecla_precionada)
+    // console.log(ultima_tecla_precionada)
 
     // var
 }
@@ -83,39 +88,51 @@ function dibujarSnake() {
         setTimeout(dibujarSnake, time)
         switch (direccion) {
             case 'Este':
-                pocition.unshift({ x: pocition[0].x + grosor, y: pocition[0].y })
-                dibujarCuadrados(pocition[0].x, pocition[0].y, grosor, grosor, colorAleatorio());
-                ctx.clearRect(pocition[pocition.length - 1].x, pocition[pocition.length - 1].y, grosor, grosor);
-                pocition.pop()
-                console.log(pocition)
+                cuerpo_cordenadas.unshift({ x: cuerpo_cordenadas[0].x + grosor, y: cuerpo_cordenadas[0].y })
+                dibujarCabesa()
+
+                console.log(cuerpo_cordenadas)
                 break;
             case 'Norte':
-                pocition.unshift({ x: pocition[0].x, y: pocition[0].y - grosor })
-                dibujarCuadrados(pocition[0].x, pocition[0].y, grosor, grosor, colorAleatorio());
-                ctx.clearRect(pocition[pocition.length - 1].x, pocition[pocition.length - 1].y, grosor, grosor);
-                pocition.pop()
-                console.log(pocition)
+                cuerpo_cordenadas.unshift({ x: cuerpo_cordenadas[0].x, y: cuerpo_cordenadas[0].y - grosor })
+                dibujarCabesa()
+
+                console.log(cuerpo_cordenadas)
                 break;
             case 'Oeste':
-                pocition.unshift({ x: pocition[0].x - grosor, y: pocition[0].y })
-                dibujarCuadrados(pocition[0].x, pocition[0].y, grosor, grosor, colorAleatorio());
-                ctx.clearRect(pocition[pocition.length - 1].x, pocition[pocition.length - 1].y, grosor, grosor);
-                pocition.pop()
-                console.log(pocition)
+                cuerpo_cordenadas.unshift({ x: cuerpo_cordenadas[0].x - grosor, y: cuerpo_cordenadas[0].y })
+                dibujarCabesa()
+
+                console.log(cuerpo_cordenadas)
                 break;
             case 'Sur':
-                pocition.unshift({ x: pocition[0].x, y: pocition[0].y + grosor })
-                dibujarCuadrados(pocition[0].x, pocition[0].y, grosor, grosor, colorAleatorio());
-                ctx.clearRect(pocition[pocition.length - 1].x, pocition[pocition.length - 1].y, grosor, grosor);
-                pocition.pop()
-                console.log(pocition)
+                cuerpo_cordenadas.unshift({ x: cuerpo_cordenadas[0].x, y: cuerpo_cordenadas[0].y + grosor })
+                dibujarCabesa()
+
+                console.log(cuerpo_cordenadas)
                 break;
             default:
                 break;
         }
     }
 
+}
 
+function dibujarCabesa() {//dibujaremos al cabesa y borraremos la cola
+    dibujarCuadrados(cuerpo_cordenadas[0].x, cuerpo_cordenadas[0].y, grosor, grosor, colorAleatorio());
+    ctx.clearRect(cuerpo_cordenadas[cuerpo_cordenadas.length - 1].x, cuerpo_cordenadas[cuerpo_cordenadas.length - 1].y, grosor, grosor);
+    var comido = false
+    manzanas_cordenadas.forEach( element => {
+        if(element.x == cuerpo_cordenadas[0].x &&
+            element.y == cuerpo_cordenadas[0].y){
+            puntage ++
+            //alert('nuevo puntaje' + puntage)
+            return comido = true
+        }
+    })
+    if(!comido){
+        cuerpo_cordenadas.pop()
+    }
 
 
 }
@@ -131,26 +148,28 @@ function dibujarTodoElCuerpo(array) {
 
 function dibujarManzana(array) {//el array es el array con los puntos del curpo, para saber donde no poner manzanas
 
-    const x_aleatorio = aleatorio(3, 9) * 15;
+    const x_aleatorio = aleatorio(0, parseInt(ancho/ grosor)) * 15;
     //aleatorio(0, parseInt(ancho/ grosor)) * 15
-    const y_aleatorio = aleatorio(3, 10) * 15;
+    const y_aleatorio = aleatorio(0, parseInt(ancho/ grosor)) * 15
 
     array.forEach(element => {
         if (element.x == x_aleatorio &&
             element.y == y_aleatorio) {
-                alert('lkdjkj')
+            alert('lkdjkj')
             return dibujarManzana(array);
 
         }
         else if (element.x !== x_aleatorio &&
-            element.y !== y_aleatorio){
-                ctx.clearRect(0, 0, ancho, largo)//borramos todo
-                dibujarFondo();
-                dibujarTodoElCuerpo(pocition)//dibujamos la cuadriculo y el cuerpo
-                dibujarCuadrados(x_aleatorio, y_aleatorio, grosor, grosor, 'red')//dibujamos las manzanas
+            element.y !== y_aleatorio) {
+            ctx.clearRect(0, 0, ancho, largo)//borramos todo
+            dibujarFondo();
+            dibujarTodoElCuerpo(cuerpo_cordenadas)//dibujamos la cuadriculo y el cuerpo
+            dibujarCuadrados(x_aleatorio, y_aleatorio, grosor, grosor, 'red')//dibujamos las manzanas
         }
 
     });
+    manzanas_cordenadas.push({ x: x_aleatorio, y: y_aleatorio })
+    console.log(`Mansana ${manzanas_cordenadas.length}`, manzanas_cordenadas)
 
 }
 
@@ -195,7 +214,7 @@ function dibujarCuadricula(cada_cuanto, canvas, lienzo = ctx, color = '#000', gr
 
 }
 
-function dibujarFondo(){
+function dibujarFondo() {
     dibujarCuadricula(grosor, canvas)
     dibujarCuadricula(grosor * 5, canvas)
     dibujarCuadricula(grosor * 5, canvas)
