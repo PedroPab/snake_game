@@ -1,0 +1,14 @@
+{
+  "name": "snake_game",
+  "version": "1.0.0",
+  "description": "crearemos el juego de la culebra con javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "snake"
+  ],
+  "author": "Pedro Pablo Montes",
+  "license": "MIT"
+}

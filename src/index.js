@@ -1,6 +1,8 @@
 const canvas = document.getElementById('canvas_snake');
 const ctx = canvas.getContext('2d');
 
+var inicio = false
+
 const time = 200;
 var dire = { 'N': 'Norte', S: 'Sur', E: 'Este', 'O': 'Oeste' }
 var star = false;
@@ -39,19 +41,19 @@ function dibujarCuadrados(x, y, ancho, largo, color = '#000000', linzo = ctx) {
 function teclaPrecionada(event) {
     if (!star && event.keyCode == tecla.ENTER) {
         //dibujarCuadrados(pocition[0].x, pocition[0].y, grosor, grosor );
-        dibujarTodoElCuerpo(pocition)
-        dibujarManzana(pocition)
+        dibujarTodoElCuerpo(pocition);
+        !inicio ? dibujarManzana(pocition) : inicio = true
         star = true
         setTimeout(dibujarSnake, time)
 
-    } else if (star && event.keyCode == tecla.PAUSE) {
+    } else if (star && event.keyCode == tecla.PAUSE) {//pause
         star = false
-    } else if(!star && event.keyCode == tecla.PAUSE){
+    } else if(!star && event.keyCode == tecla.PAUSE){//despause
         star = true
         setTimeout(dibujarSnake, time)
 
     }
-    console.log(event)
+    //console.log(event)
 
     ultima_tecla_precionada = event.keyCode
     switch (ultima_tecla_precionada) {
@@ -119,10 +121,7 @@ function dibujarSnake() {
 }
 
 function dibujarTodoElCuerpo(array) {
-    //console.log(array)
-    dibujarCuadricula(grosor, canvas)
-    dibujarCuadricula(grosor * 5, canvas)
-    dibujarCuadricula(grosor * 5, canvas)
+
     array.forEach(element => {
         dibujarCuadrados(element.x, element.y, grosor, grosor, colorAleatorio())
     });
@@ -130,36 +129,29 @@ function dibujarTodoElCuerpo(array) {
 
 }
 
-function dibujarManzana(array) {
+function dibujarManzana(array) {//el array es el array con los puntos del curpo, para saber donde no poner manzanas
 
-    const x_aleatorio = aleatorio(0, parseInt(ancho/ grosor)) * 15
-    const y_aleatorio = aleatorio(0, parseInt(ancho/ grosor)) * 15;
-    //(aleatorio(0, 32) * 15);
+    const x_aleatorio = aleatorio(3, 9) * 15;
+    //aleatorio(0, parseInt(ancho/ grosor)) * 15
+    const y_aleatorio = aleatorio(3, 10) * 15;
 
-    //dibujarCuadrados(x_aleatorio, y_aleatorio, grosor, grosor, 'red')
-    console.log(array)
-    console.log(x_aleatorio, y_aleatorio)
-    //(aleatorio(0, 32) * 15);
     array.forEach(element => {
         if (element.x == x_aleatorio &&
             element.y == y_aleatorio) {
-            alert('lalsdflksj')
-            console.log('toso mal')
-            // ctx.clearRect(0, 0, ancho, largo)
-            // dibujarTodoElCuerpo(pocition)
+                alert('lkdjkj')
             return dibujarManzana(array);
 
-        } else if (element.x !== x_aleatorio &&
+        }
+        else if (element.x !== x_aleatorio &&
             element.y !== y_aleatorio){
-            ctx.clearRect(0, 0, ancho, largo)
-            dibujarTodoElCuerpo(pocition)
-            dibujarCuadrados(x_aleatorio, y_aleatorio, grosor, grosor, 'red')
-            console.log('todo bien')
-
+                ctx.clearRect(0, 0, ancho, largo)//borramos todo
+                dibujarFondo();
+                dibujarTodoElCuerpo(pocition)//dibujamos la cuadriculo y el cuerpo
+                dibujarCuadrados(x_aleatorio, y_aleatorio, grosor, grosor, 'red')//dibujamos las manzanas
         }
 
     });
-    //return [{ x: x_aleatorio, y: y_aleatorio }]
+
 }
 
 
@@ -201,4 +193,10 @@ function dibujarCuadricula(cada_cuanto, canvas, lienzo = ctx, color = '#000', gr
         dibujarLinea(color, 0, cada_cuanto * i, width, cada_cuanto * i, lienzo, grosor);
     }
 
+}
+
+function dibujarFondo(){
+    dibujarCuadricula(grosor, canvas)
+    dibujarCuadricula(grosor * 5, canvas)
+    dibujarCuadricula(grosor * 5, canvas)
 }
