@@ -1,6 +1,8 @@
 const canvas = document.getElementById('canvas_snake');
 const ctx = canvas.getContext('2d');
 
+const puntaje = document.getElementById('puntaje');
+
 var inicio = false
 var puntage = 0
 const time = 100;
@@ -85,31 +87,32 @@ function teclaPrecionada(event) {
 
 function dibujarSnake() {
     if (star) {
+
         setTimeout(dibujarSnake, time)
         switch (direccion) {
             case 'Este':
                 cuerpo_cordenadas.unshift({ x: cuerpo_cordenadas[0].x + grosor, y: cuerpo_cordenadas[0].y })
                 dibujarCabesa()
 
-                console.log(cuerpo_cordenadas)
+                //console.log(cuerpo_cordenadas)
                 break;
             case 'Norte':
                 cuerpo_cordenadas.unshift({ x: cuerpo_cordenadas[0].x, y: cuerpo_cordenadas[0].y - grosor })
                 dibujarCabesa()
 
-                console.log(cuerpo_cordenadas)
+                //console.log(cuerpo_cordenadas)
                 break;
             case 'Oeste':
                 cuerpo_cordenadas.unshift({ x: cuerpo_cordenadas[0].x - grosor, y: cuerpo_cordenadas[0].y })
                 dibujarCabesa()
 
-                console.log(cuerpo_cordenadas)
+                //console.log(cuerpo_cordenadas)
                 break;
             case 'Sur':
                 cuerpo_cordenadas.unshift({ x: cuerpo_cordenadas[0].x, y: cuerpo_cordenadas[0].y + grosor })
                 dibujarCabesa()
 
-                console.log(cuerpo_cordenadas)
+                //console.log(cuerpo_cordenadas)
                 break;
             default:
                 break;
@@ -121,19 +124,36 @@ function dibujarSnake() {
 function dibujarCabesa() {//dibujaremos al cabesa y borraremos la cola
     dibujarCuadrados(cuerpo_cordenadas[0].x, cuerpo_cordenadas[0].y, grosor, grosor, colorAleatorio());
     ctx.clearRect(cuerpo_cordenadas[cuerpo_cordenadas.length - 1].x, cuerpo_cordenadas[cuerpo_cordenadas.length - 1].y, grosor, grosor);
-    var comido = false
-    manzanas_cordenadas.forEach( element => {
-        if(element.x == cuerpo_cordenadas[0].x &&
-            element.y == cuerpo_cordenadas[0].y){
-            puntage ++
-            //alert('nuevo puntaje' + puntage)
-            return comido = true
-        }
-    })
-    if(!comido){
-        cuerpo_cordenadas.pop()
-    }
+    manzanaComida()
+    puntaje.innerHTML = `puntaje: ${puntage}`
 
+}
+
+function manzanaComida() {
+    var comido = false
+    if (manzanas_cordenadas[0].x == cuerpo_cordenadas[0].x &&
+        manzanas_cordenadas[0].y == cuerpo_cordenadas[0].y) {
+        puntage++
+        comido = true
+    }
+    // manzanas_cordenadas.forEach( element => {
+    //     if(element.x == cuerpo_cordenadas[0].x &&
+    //         element.y == cuerpo_cordenadas[0].y){
+    //         puntage ++
+
+    //         //alert('nuevo puntaje' + puntage)
+    //         //dibujarManzana(cuerpo_cordenadas)
+    //         //element = {...manzanas_cordenadas}
+    //         //dibujarManzana(cuerpo_cordenadas)
+    //         return comido = true
+    //     }
+    // })
+    if (!comido) {
+        cuerpo_cordenadas.pop()
+    } else {
+        manzanas_cordenadas[0] = 0
+        dibujarManzana(cuerpo_cordenadas)
+    }
 
 }
 
@@ -148,9 +168,9 @@ function dibujarTodoElCuerpo(array) {
 
 function dibujarManzana(array) {//el array es el array con los puntos del curpo, para saber donde no poner manzanas
 
-    const x_aleatorio = aleatorio(0, parseInt(ancho/ grosor)) * 15;
+    const x_aleatorio = aleatorio(0, parseInt(ancho / grosor)) * 15;
     //aleatorio(0, parseInt(ancho/ grosor)) * 15
-    const y_aleatorio = aleatorio(0, parseInt(ancho/ grosor)) * 15
+    const y_aleatorio = aleatorio(0, parseInt(ancho / grosor)) * 15
 
     array.forEach(element => {
         if (element.x == x_aleatorio &&
@@ -168,7 +188,7 @@ function dibujarManzana(array) {//el array es el array con los puntos del curpo,
         }
 
     });
-    manzanas_cordenadas.push({ x: x_aleatorio, y: y_aleatorio })
+    manzanas_cordenadas.unshift({ x: x_aleatorio, y: y_aleatorio })
     console.log(`Mansana ${manzanas_cordenadas.length}`, manzanas_cordenadas)
 
 }
