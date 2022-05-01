@@ -1,6 +1,7 @@
 class Snake {
     constructor(x, y, color) {
         this.coordinates = new Array({ x: x, y: y, color: color })
+        this.score = 0
     }
     moreBody(x, y, color) {
         this.coordinates.unshift({ x: x, y: y, color: color })
@@ -17,10 +18,10 @@ class Snake {
     }
 }
 class Apple {
-    constructor(x, y, color) {
+    constructor(x, y, color = color_apple) {
         this.coordinates = new Array({ x: x, y: y, color: color })
     }
-    moreBody(x, y, color) {
+    moreBody(x, y, color = color_apple) {
         this.coordinates.push({ x: x, y: y, color: color })
     }
     drawBody() {
@@ -29,6 +30,20 @@ class Apple {
             ctx.fillRect(element.x, element.y, width_snake, height_snake);
         });
     }
+    appleComida(snake){
+        for (let i = 0; i < this.coordinates.length; i++) {
+            if(snake.coordinates[0].x == this.coordinates[i].x &&
+                snake.coordinates[0].y == this.coordinates[i].y){
+                    snake.score ++
+                    this.coordinates[i] = 0
+                    //alert('d')
+                    score.innerHTML = snake.score
+                    apples.moreBody(aleatorio(0, parseInt(width / width_snake)) * width_snake, aleatorio(0, parseInt(height / height_snake)) * height_snake)
+                }
+            
+        }
+    }
+
 }
 
 const canvas = document.getElementById('canvas_snake');
@@ -39,6 +54,7 @@ const score = document.getElementById('puntaje');
 var start = false//variable para saber si el juego a comensado
 const time = 200;
 const color = 'black'
+color_apple = 'red'
 
 var direction = { 'N': 'Norte', S: 'Sur', E: 'Este', 'O': 'Oeste' }
 var direction_snake = direction.E;
@@ -57,6 +73,8 @@ var height = canvas.clientHeight;
 const width_snake = 20;
 const height_snake = 20;
 
+var div =   (width / width_snake)
+
 
 
 //var cuerpo_cordenadas = [{ x: 120, y: 120 }, { x: 120 - 15, y: 120 }, { x: 120 - 15 - 15, y: 120 }]
@@ -70,7 +88,9 @@ if (ctx) {
     snake_1.moreBody(120 + width_snake, 120, color);
     snake_1.moreBody(120 + width_snake * 2, 120, color)
 
-    snake_1.coordinates.forEach(e => console.log(e))
+    var apples = new Apple(snake_1.coordinates[0].x + (width_snake * 7), snake_1.coordinates[0].y, "red")
+
+    //snake_1.coordinates.forEach(e => console.log(e))
     document.addEventListener("keydown", teclaPrecionada);//es precionado una tecla
 
 } else {
@@ -98,14 +118,14 @@ function teclaPrecionada(event) {
             break;
         case keys.PAUSE_START:
             start = !start
-            console.log('start')
+            //console.log('start')
             drawFullSnake()
             break;
 
         default:
             break;
     }
-    console.log(ultima_tecla_precionada)
+    //console.log(ultima_tecla_precionada)
 
 }
 
@@ -113,12 +133,14 @@ function drawFullSnake() {
     if (start) {
         ctx.clearRect(0, 0, width, height)
         dibujarFondo()
+        apples.drawBody()
         setTimeout(drawFullSnake, time);
         switch (direction_snake) {
             case 'Este':
-                console.log(snake_1.coordinates)
+                //console.log(snake_1.coordinates)
                 snake_1.moreBody2(snake_1.coordinates[0].x + width_snake, snake_1.coordinates[0].y, snake_1.coordinates[0].color)
                 // snake_1.coordinates[0]
+                apples.appleComida(snake_1)
                 //moverse(snake_1.coordinates, width_snake, 0, )
                 break;
             case 'Norte':
@@ -138,12 +160,12 @@ function drawFullSnake() {
                 break;
 
         }
-        console.log('jasj')
 
-        snake_1.drawBody();
+        
         //moverse(snake_1.coordinates)
         snake_1.coordinates.pop()
-        snake_1.coordinates.forEach(e => console.log(e))
+        snake_1.drawBody();
+        //snake_1.coordinates.forEach(e => console.log(e))
     }
 
 }
