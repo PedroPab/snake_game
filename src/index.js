@@ -6,15 +6,15 @@ const puntaje = document.getElementById('puntaje');
 var inicio = false
 var puntage = 0
 const time = 100;
-var dire = { 'N': 'Norte', S: 'Sur', E: 'Este', 'O': 'Oeste' }
+var direction = { 'N': 'Norte', S: 'Sur', E: 'Este', 'O': 'Oeste' }
 var star = false;
-var direccion = dire.E;
-var tecla = {
+var direccion = direction.E;
+var keys = {
     UP: 38,
     DOWN: 40,
     LEFT: 37,
     RIGHT: 39,
-    PAUSE: 27,
+    PAUSE_START: 32,
     ENTER: 13
 };
 
@@ -42,7 +42,7 @@ function dibujarCuadrados(x, y, ancho, largo, color = '#000000', linzo = ctx) {
 }
 
 function teclaPrecionada(event) {
-    if (!star && event.keyCode == tecla.ENTER) {
+    if (!star && event.keyCode == keys.ENTER) {
         //dibujarCuadrados(cuerpo_cordenadas[0].x, cuerpo_cordenadas[0].y, grosor, grosor );
         dibujarTodoElCuerpo(cuerpo_cordenadas);
         if (!inicio) {
@@ -51,30 +51,30 @@ function teclaPrecionada(event) {
         }
 
         star = true
-        setTimeout(dibujarSnake, time)
+        setTimeout(drawFullSnake, time)
 
-    } else if (star && event.keyCode == tecla.PAUSE) {//pause
+    } else if (star && event.keyCode == keys.PAUSE_START) {//pause
         star = false
-    } else if (!star && event.keyCode == tecla.PAUSE) {//despause
+    } else if (!star && event.keyCode == keys.PAUSE_START) {//despause
         star = true
-        setTimeout(dibujarSnake, time)
+        setTimeout(drawFullSnake, time)
 
     }
     //console.log(event)
 
     ultima_tecla_precionada = event.keyCode
     switch (ultima_tecla_precionada) {
-        case tecla.UP:
-            direccion = dire.N
+        case keys.UP:
+            direccion = direction.N
             break;
-        case tecla.DOWN:
-            direccion = dire.S
+        case keys.DOWN:
+            direccion = direction.S
             break;
-        case tecla.LEFT:
-            direccion = dire.O
+        case keys.LEFT:
+            direccion = direction.O
             break;
-        case tecla.RIGHT:
-            direccion = dire.E
+        case keys.RIGHT:
+            direccion = direction.E
             break;
 
         default:
@@ -85,10 +85,10 @@ function teclaPrecionada(event) {
     // var
 }
 
-function dibujarSnake() {
+function drawFullSnake() {
     if (star) {
 
-        setTimeout(dibujarSnake, time)
+        setTimeout(drawFullSnake, time)
         switch (direccion) {
             case 'Este':
                 cuerpo_cordenadas.unshift({ x: cuerpo_cordenadas[0].x + grosor, y: cuerpo_cordenadas[0].y })
@@ -115,8 +115,16 @@ function dibujarSnake() {
                 //console.log(cuerpo_cordenadas)
                 break;
             default:
+
                 break;
         }
+        // ctx.clearRect(0, 0, ancho, largo)
+        // dibujarFondo()
+        // dibujarTodoElCuerpo(cuerpo_cordenadas)
+        // dibujarManzana(manzanas_cordenadas)
+        // dibujarCabesa()
+
+
     }
 
 }
@@ -154,6 +162,7 @@ function manzanaComida() {
         manzanas_cordenadas[0] = 0
         dibujarManzana(cuerpo_cordenadas)
     }
+    return comido
 
 }
 
@@ -167,29 +176,32 @@ function dibujarTodoElCuerpo(array) {
 }
 
 function dibujarManzana(array) {//el array es el array con los puntos del curpo, para saber donde no poner manzanas
+    if (manzanaComida()) {
 
-    const x_aleatorio = aleatorio(0, parseInt(ancho / grosor)) * 15;
-    //aleatorio(0, parseInt(ancho/ grosor)) * 15
-    const y_aleatorio = aleatorio(0, parseInt(ancho / grosor)) * 15
 
-    array.forEach(element => {
-        if (element.x == x_aleatorio &&
-            element.y == y_aleatorio) {
-            alert('lkdjkj')
-            return dibujarManzana(array);
+        const x_aleatorio = aleatorio(0, parseInt(ancho / grosor)) * 15;
+        //aleatorio(0, parseInt(ancho/ grosor)) * 15
+        const y_aleatorio = aleatorio(0, parseInt(ancho / grosor)) * 15
 
-        }
-        else if (element.x !== x_aleatorio &&
-            element.y !== y_aleatorio) {
-            ctx.clearRect(0, 0, ancho, largo)//borramos todo
-            dibujarFondo();
-            dibujarTodoElCuerpo(cuerpo_cordenadas)//dibujamos la cuadriculo y el cuerpo
-            dibujarCuadrados(x_aleatorio, y_aleatorio, grosor, grosor, 'red')//dibujamos las manzanas
-        }
+        array.forEach(element => {
+            if (element.x == x_aleatorio &&
+                element.y == y_aleatorio) {
+                alert('lkdjkj')
+                return dibujarManzana(array);
 
-    });
-    manzanas_cordenadas.unshift({ x: x_aleatorio, y: y_aleatorio })
-    console.log(`Mansana ${manzanas_cordenadas.length}`, manzanas_cordenadas)
+            }
+            else if (element.x !== x_aleatorio &&
+                element.y !== y_aleatorio) {
+                ctx.clearRect(0, 0, ancho, largo)//borramos todo
+                dibujarFondo();
+                dibujarTodoElCuerpo(cuerpo_cordenadas)//dibujamos la cuadriculo y el cuerpo
+                dibujarCuadrados(x_aleatorio, y_aleatorio, grosor, grosor, 'red')//dibujamos las manzanas
+            }
+
+        });
+        manzanas_cordenadas.unshift({ x: x_aleatorio, y: y_aleatorio })
+        console.log(`Mansana ${manzanas_cordenadas.length}`, manzanas_cordenadas)
+    }
 
 }
 
